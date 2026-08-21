@@ -617,17 +617,16 @@ function buildStars(){
 function buildOrbit(){
   const node = document.getElementById('orbitNode');
   const keys = Object.keys(FIELDS).filter(k=>k!=='custom');
-  const R = 130;
   let html = '';
   keys.forEach((k,i)=>{
     const angle = (i/keys.length) * 2*Math.PI;
-    const x = 140 + R*Math.cos(angle) - 17;
-    const y = 140 + R*Math.sin(angle) - 17;
-    html += `<span style="left:${x}px; top:${y}px; border-color:${FIELDS[k].color}44;">${FIELDS[k].emoji}</span>`;
+    const x = 50 + 46 * Math.cos(angle);
+    const y = 50 + 46 * Math.sin(angle);
+    html += `<span style="left:calc(${x}% - 17px); top:calc(${y}% - 17px); border-color:${FIELDS[k].color}44;">${FIELDS[k].emoji}</span>`;
   });
   node.innerHTML = html;
 }
-
+  
 /* ---------------- TABS ---------------- */
 document.getElementById('tabs').addEventListener('click', (e)=>{
   const btn = e.target.closest('button[data-tab]');
