@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="az">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SONSUZLUQ — Bu gün nə araşdırım?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<style>
+  :root{
+    --bg: #07060d;
+    --bg-2: #0b0a17;
+    --bg-3: #0f0e1e;
+    --glass: rgba(255,255,255,0.045);
+    --glass-strong: rgba(255,255,255,0.075);
+    --border: rgba(255,255,255,0.09);
+    --border-soft: rgba(255,255,255,0.05);
+    --text: #ece9f7;
+    --text-dim: #9691ae;
+    --text-faint: #635f7a;
+    --purple: #a78bfa;
+    --purple-deep: #7c5cff;
+    --blue: #5eb1ff;
+    --green: #3ddc97;
+    --teal: #34d1c4;
+    --gold: #f0c674;
+    --radius: 18px;
+    --radius-sm: 12px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: radial-gradient(ellipse 90% 60% at 50% -10%, #1a1233 0%, var(--bg) 55%), var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+    position:relative;
+  }
+  ::selection{ background: rgba(167,139,250,0.35); }
+  h1,h2,h3,.display{ font-family:'Space Grotesk', sans-serif; letter-spacing:-0.01em; }
+  .mono{ font-family:'JetBrains Mono', monospace; letter-spacing:0.02em; }
+  a{ color:inherit; text-decoration:none; }
+  button{ font-family:inherit; cursor:pointer; }
+
+  /* starfield */
+  #stars{ position:fixed; inset:0; z-index:0; pointer-events:none; }
+  .star{ position:absolute; border-radius:50%; background:#fff; opacity:0.5; animation:twinkle 5s ease-in-out infinite; }
+  @keyframes twinkle{ 0%,100%{opacity:.15;} 50%{opacity:.75;} }
+
+  .noise{ position:fixed; inset:0; z-index:1; pointer-events:none; opacity:0.025;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* nav */
+  header{
+    position:sticky; top:0; z-index:50;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 18px 32px;
+    backdrop-filter: blur(16px);
+    background: rgba(7,6,13,0.55);
+    border-bottom: 1px solid var(--border-soft);
+  }
+  .logo{ display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.05rem; }
+  .logo .dot{ width:26px; height:26px; object-fit:contain; filter: drop-shadow(0 0 10px rgba(167,139,250,0.55)); }
+  nav.tabs{ display:flex; gap:4px; background:var(--glass); border:1px solid var(--border-soft); padding:4px; border-radius:100px; }
+  nav.tabs button{
+    background:none; border:none; color:var(--text-dim); padding:9px 18px; border-radius:100px; font-size:0.86rem; font-weight:600;
+    transition: all .25s ease; white-space:nowrap;
+  }
+  nav.tabs button.active{ background: linear-gradient(135deg, rgba(167,139,250,0.25), rgba(94,177,255,0.18)); color:var(--text); box-shadow: inset 0 0 0 1px rgba(255,255,255,0.1); }
+  nav.tabs button:hover:not(.active){ color:var(--text); }
+  .streak-pill{ display:flex; align-items:center; gap:6px; font-size:0.8rem; color:var(--gold); background:var(--glass); border:1px solid var(--border-soft); padding:8px 14px; border-radius:100px; }
+
+  main{ position:relative; z-index:2; max-width:1180px; margin:0 auto; padding: 0 28px 100px; }
+  section{ animation: fadeIn .5s ease; }
+  @keyframes fadeIn{ from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);} }
+
+  /* HERO */
+  .hero{ text-align:center; padding: 74px 0 20px; }
+  .eyebrow{ font-size:0.78rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.18em; margin-bottom:18px; }
+  .hero h1{ font-size: clamp(2rem, 5vw, 3.4rem); font-weight:700; line-height:1.12; margin-bottom:14px; }
+  .hero h1 span{ background: linear-gradient(120deg, var(--purple), var(--blue) 55%, var(--green)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hero p.sub{ color:var(--text-dim); font-size:1.02rem; max-width:520px; margin:0 auto 46px; }
+
+  /* mode chips */
+  .modes{ display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-bottom: 48px; }
+  .chip{
+    background:var(--glass); border:1px solid var(--border); padding:9px 16px; border-radius:100px; font-size:0.84rem;
+    color:var(--text-dim); display:flex; align-items:center; gap:7px; transition: all .2s ease;
+  }
+  .chip:hover{ border-color: rgba(167,139,250,0.5); color:var(--text); }
+  .chip.active{ background: linear-gradient(135deg, rgba(167,139,250,0.28), rgba(61,220,151,0.14)); border-color: var(--purple); color:var(--text); box-shadow:0 0 22px rgba(124,92,255,0.18); }
+
+  /* constellation button */
+  .constellation{ position:relative; width:280px; height:280px; margin: 0 auto 40px; display:flex; align-items:center; justify-content:center; }
+  .orbit-ring{ position:absolute; inset:0; border-radius:50%; border:1px dashed rgba(255,255,255,0.08); animation: spin 60s linear infinite; }
+  .orbit-ring.r2{ inset:34px; animation-duration:40s; animation-direction:reverse; border-style:dotted; }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .orbit-node{ position:absolute; width:280px; height:280px; top:0; left:0; animation: spin 42s linear infinite; }
+  .orbit-node span{ position:absolute; display:block; width:34px; height:34px; border-radius:50%; background:var(--glass-strong); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:15px; animation: spin 42s linear infinite reverse; }
+  #mainRandomBtn{
+    position:relative; z-index:3; width:150px; height:150px; border-radius:50%; border:none;
+    background: radial-gradient(circle at 35% 30%, #2a2050, #0e0c1c 70%);
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.09), 0 0 60px rgba(124,92,255,0.35), inset 0 0 30px rgba(94,177,255,0.12);
+    color:var(--text); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px;
+    transition: transform .2s ease, box-shadow .2s ease;
+  }
+  #mainRandomBtn:hover{ transform: scale(1.045); box-shadow: 0 0 0 1px rgba(255,255,255,0.14), 0 0 80px rgba(124,92,255,0.5), inset 0 0 30px rgba(94,177,255,0.18); }
+  #mainRandomBtn:active{ transform: scale(0.97); }
+  #mainRandomBtn .icon{ font-size:2.1rem; display:inline-block; }
+  #mainRandomBtn .label{ font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); font-weight:600;}
+  #mainRandomBtn.searching{ pointer-events:none; }
+  #mainRandomBtn.searching .icon{ animation: spinIcon .55s linear infinite; }
+  @keyframes spinIcon{ to{ transform:rotate(360deg); } }
+  .constellation.searching .orbit-node{ animation-duration:2.2s; }
+  .constellation.searching .orbit-ring{ animation-duration:6s; }
+  .constellation.searching .orbit-ring.r2{ animation-duration:3.5s; }
+  .constellation.searching .orbit-node span{ animation-duration:2.2s; }
+  .search-caption{ margin-top:16px; font-size:0.78rem; color:var(--text-dim); min-height:18px; opacity:0; transition:opacity .25s ease; }
+  .search-caption.show{ opacity:1; }
+
+  .stats-strip{ display:flex; justify-content:center; gap:0; flex-wrap:wrap; max-width:640px; margin: 0 auto; border:1px solid var(--border-soft); border-radius:100px; background:var(--glass); padding:14px 8px; }
+  .stats-strip .stat{ padding:0 26px; text-align:center; border-right:1px solid var(--border-soft); }
+  .stats-strip .stat:last-child{ border-right:none; }
+  .stats-strip .stat b{ display:block; font-family:'Space Grotesk'; font-size:1.25rem; }
+  .stats-strip .stat small{ color:var(--text-faint); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.08em; }
+
+  /* topic reveal card */
+  #revealWrap{ max-width:640px; margin:46px auto 0; display:none; }
+  .topic-reveal{
+    background: linear-gradient(160deg, var(--glass-strong), var(--glass));
+    border:1px solid var(--border); border-radius: var(--radius); padding:30px 32px;
+    animation: revealIn .45s cubic-bezier(.2,.9,.3,1.2);
+  }
+  @keyframes revealIn{ from{ opacity:0; transform: translateY(14px) scale(.97);} to{opacity:1; transform:translateY(0) scale(1);} }
+  .topic-reveal .field-tag{ display:inline-flex; align-items:center; gap:6px; font-size:0.72rem; padding:5px 12px; border-radius:100px; background:rgba(255,255,255,0.06); margin-bottom:14px; }
+  .topic-reveal h3{ font-size:1.5rem; line-height:1.3; margin-bottom:14px; }
+  .diff-stars{ letter-spacing:2px; font-size:0.8rem; margin-bottom:18px; }
+  .reveal-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .btn{ border:1px solid var(--border); background:var(--glass); color:var(--text); padding:11px 20px; border-radius:100px; font-size:0.86rem; font-weight:600; transition:all .2s ease; }
+  .btn:hover{ border-color:var(--purple); background:rgba(167,139,250,0.12); }
+  .btn.primary{ background:linear-gradient(135deg, var(--purple-deep), var(--blue)); border:none; color:#0a0714; }
+  .btn.primary:hover{ filter:brightness(1.08); }
+  .btn.ghost{ background:none; border:1px solid var(--border-soft); color:var(--text-dim); }
+
+  /* section headers */
+  .section-head{ padding: 54px 0 30px; text-align:center; }
+  .section-head h2{ font-size:2rem; margin-bottom:10px; }
+  .section-head p{ color:var(--text-dim); max-width:460px; margin:0 auto; }
+
+  /* explore map */
+  .map-wrap{ position:relative; height:560px; max-width:720px; margin: 0 auto 20px; }
+  .map-wrap svg{ position:absolute; inset:0; width:100%; height:100%; }
+  .map-center{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; z-index:3; }
+  .map-center .core{ width:96px; height:96px; border-radius:50%; background:radial-gradient(circle at 35% 30%, #2a2050, #0e0c1c 70%); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:0.72rem; font-weight:700; letter-spacing:0.08em; box-shadow:0 0 40px rgba(124,92,255,0.35); }
+  .field-node{ position:absolute; transform:translate(-50%,-50%); z-index:2; display:flex; flex-direction:column; align-items:center; gap:6px; background:none; border:none; }
+  .field-node .bubble{ width:52px; height:52px; border-radius:50%; background:var(--glass-strong); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:1.3rem; transition:all .25s ease; }
+  .field-node span.fname{ font-size:0.68rem; color:var(--text-dim); white-space:nowrap; font-weight:600; }
+  .field-node:hover .bubble, .field-node.active .bubble{ transform:scale(1.12); box-shadow:0 0 24px var(--node-color, var(--purple)); border-color: var(--node-color, var(--purple)); }
+  .field-node.active span.fname{ color:var(--text); }
+
+  .topic-grid{ display:grid; grid-template-columns: repeat(auto-fill, minmax(250px,1fr)); gap:14px; margin-top: 26px; }
+  .topic-card{
+    background:var(--glass); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:18px 18px 16px;
+    transition: all .2s ease; text-align:left; display:flex; flex-direction:column; gap:10px; min-height:120px;
+  }
+  .topic-card:hover{ border-color:var(--purple); transform:translateY(-2px); background:var(--glass-strong); }
+  .topic-card .top-row{ display:flex; justify-content:space-between; align-items:center; }
+  .topic-card .tag{ font-size:0.65rem; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-faint); }
+  .topic-card p.ttl{ font-size:0.92rem; line-height:1.4; font-weight:500; }
+
+  /* journal */
+  .journal-stats{ display:grid; grid-template-columns: repeat(4,1fr); gap:12px; margin-bottom:34px; }
+  .jstat{ background:var(--glass); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:18px; text-align:center; }
+  .jstat b{ display:block; font-size:1.5rem; font-family:'Space Grotesk'; background:linear-gradient(120deg,var(--purple),var(--green)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .jstat small{ color:var(--text-faint); font-size:0.7rem; text-transform:uppercase; letter-spacing:0.06em; }
+  .bar-chart{ display:flex; flex-direction:column; gap:10px; background:var(--glass); border:1px solid var(--border-soft); border-radius:var(--radius); padding:22px; margin-bottom:30px; }
+  .bar-row{ display:grid; grid-template-columns:120px 1fr 34px; align-items:center; gap:10px; font-size:0.78rem; color:var(--text-dim); }
+  .bar-track{ height:8px; border-radius:6px; background:rgba(255,255,255,0.05); overflow:hidden; }
+  .bar-fill{ height:100%; border-radius:6px; background:linear-gradient(90deg, var(--purple), var(--green)); }
+  .xp-bar-wrap{ background:var(--glass); border:1px solid var(--border-soft); border-radius:var(--radius); padding:20px 24px; margin-bottom:30px; display:flex; align-items:center; gap:18px; }
+  .xp-bar-track{ flex:1; height:10px; border-radius:8px; background:rgba(255,255,255,0.06); overflow:hidden; }
+  .xp-bar-fill{ height:100%; background:linear-gradient(90deg, var(--purple-deep), var(--blue), var(--green)); transition: width .5s ease; }
+
+  .entries{ display:flex; flex-direction:column; gap:14px; }
+  .entry-card{ background:var(--glass); border:1px solid var(--border-soft); border-radius:var(--radius-sm); padding:20px 22px; }
+  .entry-card .ehead{ display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px; gap:10px; flex-wrap:wrap; }
+  .entry-card h4{ font-size:1.02rem; font-weight:600; }
+  .entry-card .edate{ font-size:0.7rem; color:var(--text-faint); }
+  .entry-card .efield{ font-size:0.68rem; color:var(--text-dim); margin-bottom:8px; }
+  .entry-block{ margin-top:10px; }
+  .entry-block b{ display:block; font-size:0.68rem; text-transform:uppercase; letter-spacing:0.07em; color:var(--purple); margin-bottom:4px; }
+  .entry-block p{ font-size:0.88rem; color:var(--text-dim); line-height:1.5; white-space:pre-wrap; }
+  .empty-state{ text-align:center; padding:60px 20px; color:var(--text-faint); }
+  .empty-state .big{ font-size:2.4rem; margin-bottom:14px; }
+
+  /* challenges */
+  .challenge-card{ background:var(--glass); border:1px solid var(--border-soft); border-radius:var(--radius); padding:26px; margin-bottom:20px; }
+  .challenge-card h3{ font-size:1.15rem; margin-bottom:6px; }
+  .challenge-card p{ color:var(--text-dim); font-size:0.88rem; margin-bottom:18px; }
+  .day-row{ display:flex; gap:8px; flex-wrap:wrap; }
+  .day-pill{ font-size:0.75rem; padding:8px 14px; border-radius:100px; background:rgba(255,255,255,0.04); border:1px solid var(--border-soft); color:var(--text-dim); }
+  .day-pill.done{ background:rgba(61,220,151,0.14); border-color:var(--green); color:var(--green); }
+
+  .wow-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:14px; margin-top:24px; }
+  .wow-card{ background:linear-gradient(160deg, rgba(167,139,250,0.08), rgba(61,220,151,0.04)); border:1px solid var(--border); border-radius:var(--radius-sm); padding:20px; font-size:0.94rem; line-height:1.5; cursor:pointer; transition:all .2s ease; }
+  .wow-card:hover{ border-color:var(--purple); transform:translateY(-2px); }
+
+  /* add topic form */
+  .add-form{ max-width:520px; margin:0 auto; background:var(--glass); border:1px solid var(--border-soft); border-radius:var(--radius); padding:26px; }
+  .add-form label{ display:block; font-size:0.76rem; color:var(--text-dim); text-transform:uppercase; letter-spacing:0.06em; margin:14px 0 6px; }
+  .add-form input, .add-form select, .add-form textarea{
+    width:100%; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; padding:11px 14px; color:var(--text); font-family:inherit; font-size:0.92rem;
+  }
+  .add-form textarea{ resize:vertical; min-height:70px; }
+
+  /* overlay */
+  .overlay{ position:fixed; inset:0; z-index:100; background:rgba(5,4,10,0.72); backdrop-filter:blur(6px); display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding: 50px 20px; }
+  .overlay[hidden]{ display:none !important; }
+  .overlay-card{ width:100%; max-width:640px; background: linear-gradient(160deg, #14112a, #0b0a17); border:1px solid var(--border); border-radius:22px; padding:34px 34px 40px; animation: revealIn .35s ease; position:relative; }
+  .overlay-close{ position:absolute; top:18px; right:18px; width:34px; height:34px; border-radius:50%; background:var(--glass); border:1px solid var(--border-soft); color:var(--text-dim); font-size:1rem; display:flex; align-items:center; justify-content:center; }
+  .overlay-close:hover{ color:var(--text); border-color:var(--purple); }
+  .step{ margin-top:26px; padding-top:22px; border-top:1px solid var(--border-soft); }
+  .step .num{ font-family:'JetBrains Mono'; font-size:0.72rem; color:var(--purple); margin-bottom:8px; display:block; }
+  .step h4{ font-size:1rem; margin-bottom:10px; font-weight:600; }
+  .step textarea{ width:100%; min-height:80px; background:rgba(255,255,255,0.04); border:1px solid var(--border); border-radius:10px; padding:12px 14px; color:var(--text); font-family:inherit; font-size:0.9rem; resize:vertical; }
+  .rabbit-list{ display:flex; flex-direction:column; gap:8px; margin-top:12px; }
+  .rabbit-item{ display:flex; align-items:center; justify-content:space-between; background:var(--glass); border:1px solid var(--border-soft); padding:12px 14px; border-radius:10px; font-size:0.85rem; }
+  .rabbit-item:hover{ border-color:var(--purple); }
+  .toast{ position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:linear-gradient(135deg, var(--purple-deep), var(--green)); color:#080612; font-weight:700; padding:13px 26px; border-radius:100px; font-size:0.86rem; z-index:200; opacity:0; transition:all .35s ease; pointer-events:none; box-shadow:0 10px 40px rgba(124,92,255,0.4); }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+
+  footer{ text-align:center; padding: 40px 20px 60px; color:var(--text-faint); font-size:0.78rem; position:relative; z-index:2; }
+  footer i{ color:var(--purple); font-style:normal; }
+
+  @media(max-width:720px){
+    header{ padding:14px 16px; flex-direction:column; gap:10px; }
+    nav.tabs{ order:2; overflow-x:auto; max-width:100%; }
+    nav.tabs button{ padding:8px 12px; font-size:0.78rem; }
+    .hero{ padding-top:40px; }
+    .constellation{ width:220px; height:220px; }
+    .orbit-node, .orbit-node span, .orbit-ring{ width:220px; height:220px; }
+    #mainRandomBtn{ width:120px; height:120px; }
+    .stats-strip .stat{ padding:0 14px; }
+    .map-wrap{ height:auto; }
+    .journal-stats{ grid-template-columns:repeat(2,1fr); }
+  }
+</style>
+</head>
+<body>
+
+<div id="stars"></div>
+<div class="noise"></div>
+
+<header>
+  <div class="logo"><img class="dot" src="data:image/png;base64,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" alt=""> SONSUZLUQ</div>
+  <nav class="tabs" id="tabs">
+    <button data-tab="home" class="active">Ana səhifə</button>
+    <button data-tab="explore">Kəşf et</button>
+    <button data-tab="journal">Tədqiqat dəftərim</button>
+    <button data-tab="challenges">Challenge</button>
+  </nav>
+  <div class="streak-pill">🔥 <span id="streakCount">0</span> günlük seriya</div>
+</header>
+
+<main>
+
+  <!-- HOME -->
+  <section id="tab-home">
+    <div class="hero">
+      <div class="eyebrow mono">Şəxsi elmi kəşf platforması</div>
+      <h1>Bu gün nə <span>araşdıracaqsan?</span></h1>
+      <p class="sub">Sən bilmirsən nə öyrənəcəyini. Sadəcə bas — kainat, beyin, ədədlər və ya paradokslardan biri qarşına çıxsın.</p>
+
+      <div class="modes mono" id="modes">
+        <button class="chip active" data-mode="all">🎲 Tam random</button>
+        <button class="chip" data-mode="experiment">🧪 Mənə eksperiment ver</button>
+        <button class="chip" data-mode="paradox">🧩 Mənə problem ver</button>
+        <button class="chip" data-mode="wow">✨ Məni düşündür</button>
+      </div>
+
+      <div class="constellation">
+        <div class="orbit-ring"></div>
+        <div class="orbit-ring r2"></div>
+        <div class="orbit-node" id="orbitNode"></div>
+        <button id="mainRandomBtn">
+          <span class="icon">🎲</span>
+          <span class="label">Sürpriz et</span>
+        </button>
+      </div>
+      <div class="search-caption mono" id="searchCaption">Kainatda axtarılır...</div>
+
+      <div class="stats-strip mono" id="statsStrip">
+        <div class="stat"><b id="s-topics">0</b><small>Mövzu</small></div>
+        <div class="stat"><b id="s-fields">0</b><small>Sahə</small></div>
+        <div class="stat"><b id="s-streak">0</b><small>Gün</small></div>
+        <div class="stat"><b id="s-xp">0</b><small>XP</small></div>
+      </div>
+
+      <div id="revealWrap"></div>
+    </div>
+
+    <div class="section-head">
+      <h2>✨ Məni düşündür</h2>
+      <p>Cavabı olmayan, sadəcə düşünmək üçün olan suallar.</p>
+    </div>
+    <div class="wow-grid" id="wowGrid"></div>
+  </section>
+
+  <!-- EXPLORE -->
+  <section id="tab-explore" hidden>
+    <div class="section-head">
+      <h2>🧭 Elm xəritəsi</h2>
+      <p>Bir sahəyə klikləyərək o sahənin mövzularını kəşf et, ya da öz mövzunu əlavə et.</p>
+    </div>
+    <div class="map-wrap" id="mapWrap">
+      <svg id="mapLines"></svg>
+      <div class="map-center"><div class="core">ELM<br>xəritəsi</div></div>
+    </div>
+    <div style="text-align:center; margin-bottom:8px;">
+      <button class="btn" id="clearFilterBtn" style="display:none;">↺ Bütün sahələr</button>
+    </div>
+    <div class="topic-grid" id="exploreGrid"></div>
+
+    <div class="section-head"><h2>📝 Öz mövzunu əlavə et</h2></div>
+    <div class="add-form">
+      <label>Mövzunun adı</label>
+      <input type="text" id="customTitle" placeholder="Məsələn: Şüur nə vaxt yaranıb?">
+      <label>Sahə</label>
+      <select id="customField"></select>
+      <button class="btn primary" style="margin-top:18px; width:100%;" id="addCustomBtn">+ Əlavə et</button>
+    </div>
+  </section>
+
+  <!-- JOURNAL -->
+  <section id="tab-journal" hidden>
+    <div class="section-head">
+      <h2>📓 Tədqiqat dəftərim</h2>
+      <p>Araşdırdığın mövzular şəxsi elmi jurnalına çevrilir.</p>
+    </div>
+
+    <div class="xp-bar-wrap">
+      <div class="mono" style="font-size:0.8rem; color:var(--text-dim); white-space:nowrap;">Level <span id="levelNum">1</span></div>
+      <div class="xp-bar-track"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+      <div class="mono" style="font-size:0.75rem; color:var(--text-faint); white-space:nowrap;"><span id="xpNow">0</span>/<span id="xpNext">200</span> XP</div>
+    </div>
+
+    <div class="journal-stats">
+      <div class="jstat"><b id="j-topics">0</b><small>Araşdırılan</small></div>
+      <div class="jstat"><b id="j-fields">0</b><small>Sahə</small></div>
+      <div class="jstat"><b id="j-experiments">0</b><small>Eksperiment</small></div>
+      <div class="jstat"><b id="j-paradoxes">0</b><small>Paradoks</small></div>
+    </div>
+
+    <div class="bar-chart" id="fieldBars"></div>
+
+    <div id="entriesWrap">
+      <div class="entries" id="entriesList"></div>
+    </div>
+  </section>
+
+  <!-- CHALLENGES -->
+  <section id="tab-challenges" hidden>
+    <div class="section-head">
+      <h2>🏆 Challenge-lər</h2>
+      <p>Özünü sınamaq üçün strukturlaşdırılmış tapşırıqlar.</p>
+    </div>
+
+    <div class="challenge-card">
+      <h3>🔬 7 günlük elm challenge</h3>
+      <p>Hər gün fərqli sahədən bir mövzu araşdır.</p>
+      <div class="day-row" id="challenge7"></div>
+    </div>
+
+    <div class="challenge-card">
+      <h3>🧩 7 paradoksu həll et</h3>
+      <p>Klassik paradokslar üzərində öz mövqeyini formalaşdır.</p>
+      <div class="day-row" id="challengeParadox"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>tərtib edildi <i>SONSUZLUQ</i> ilə — "Bu gün nə öyrənəcəyimi bilmirəm."</footer>
+
+<div class="overlay" id="overlay" hidden>
+  <div class="overlay-card" id="overlayCard"></div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+/* ---------------- DATA ---------------- */
+const FIELDS = {
+  psixologiya: {name:"Psixologiya", emoji:"🧠", color:"#a78bfa"},
+  fizika: {name:"Fizika", emoji:"⚛️", color:"#5eb1ff"},
+  astronomiya: {name:"Astronomiya", emoji:"🌌", color:"#7c5cff"},
+  biologiya: {name:"Biologiya", emoji:"🧬", color:"#3ddc97"},
+  kimya: {name:"Kimya", emoji:"🧪", color:"#34d1c4"},
+  riyaziyyat: {name:"Riyaziyyat", emoji:"📐", color:"#8b95ff"},
+  ai: {name:"Süni intellekt", emoji:"🤖", color:"#60d9ff"},
+  felsefe: {name:"Fəlsəfə", emoji:"💭", color:"#c084fc"},
+  dilcilik: {name:"Dilçilik", emoji:"🗣️", color:"#7dd3c0"},
+  statistika: {name:"Statistika", emoji:"📊", color:"#6ee7d8"},
+  cemiyyet: {name:"Tarix & Cəmiyyət", emoji:"🏛️", color:"#93a5ff"},
+  custom: {name:"Mənim mövzularım", emoji:"⭐", color:"#f0c674"},
+};
+
+const TOPICS = [
+ {f:"psixologiya", t:"Choice Blindness", d:2, type:"question"},
+ {f:"psixologiya", t:"Placebo Effect", d:1, type:"question"},
+ {f:"psixologiya", t:"Perceptual Illusions", d:2, type:"question"},
+ {f:"psixologiya", t:"Reconstructive Memory", d:2, type:"question"},
+ {f:"psixologiya", t:"Mere Exposure Effect", d:1, type:"question"},
+ {f:"psixologiya", t:"Dunning–Kruger Effect", d:2, type:"question"},
+ {f:"psixologiya", t:"Bystander Effect", d:2, type:"question"},
+ {f:"psixologiya", t:"Minimal Phenomenal Selfhood", d:3, type:"question"},
+ {f:"psixologiya", t:"Miller's Law (Working Memory)", d:2, type:"question"},
+ {f:"psixologiya", t:"Frisson", d:2, type:"question"},
+
+ {f:"fizika", t:"Arrow of Time", d:3, type:"question"},
+ {f:"fizika", t:"Twin Paradox", d:3, type:"paradox"},
+ {f:"fizika", t:"Observer Effect", d:3, type:"question"},
+ {f:"fizika", t:"Double-Slit Experiment", d:3, type:"question"},
+ {f:"fizika", t:"Entropy", d:3, type:"question"},
+ {f:"fizika", t:"Black Hole Information Paradox", d:3, type:"paradox"},
+ {f:"fizika", t:"Metric Expansion of the Universe", d:3, type:"question"},
+ {f:"fizika", t:"Fermi Paradox", d:2, type:"paradox"},
+ {f:"fizika", t:"Quantum Entanglement", d:3, type:"question"},
+
+ {f:"astronomiya", t:"Big Bang Theory", d:3, type:"question"},
+ {f:"astronomiya", t:"Dark Matter", d:2, type:"question"},
+ {f:"astronomiya", t:"Dark Energy", d:3, type:"question"},
+ {f:"astronomiya", t:"Drake Equation", d:2, type:"question"},
+ {f:"astronomiya", t:"Gravitational Waves", d:2, type:"question"},
+ {f:"astronomiya", t:"Multiverse Hypothesis", d:3, type:"question"},
+ {f:"astronomiya", t:"Goldilocks Zone", d:1, type:"question"},
+
+ {f:"biologiya", t:"Senescence", d:2, type:"question"},
+ {f:"biologiya", t:"Nature vs. Nurture", d:2, type:"question"},
+ {f:"biologiya", t:"Epigenetics", d:2, type:"question"},
+ {f:"biologiya", t:"Virus (Living or Non-living?)", d:1, type:"question"},
+ {f:"biologiya", t:"Gut–Brain Axis", d:2, type:"question"},
+ {f:"biologiya", t:"Evolutionary Trade-offs", d:2, type:"question"},
+ {f:"biologiya", t:"Regeneration", d:2, type:"question"},
+
+ {f:"kimya", t:"Chromophores (Rəngin kimyası)", d:1, type:"question"},
+ {f:"kimya", t:"Anomalous Properties of Water", d:1, type:"question"},
+ {f:"kimya", t:"Catalysis", d:2, type:"question"},
+ {f:"kimya", t:"Crystal Symmetry", d:2, type:"question"},
+ {f:"kimya", t:"Oxidation (Paslanma)", d:1, type:"question"},
+
+ {f:"riyaziyyat", t:"Cantor's Theorem", d:3, type:"question"},
+ {f:"riyaziyyat", t:"Hilbert's Grand Hotel", d:3, type:"paradox"},
+ {f:"riyaziyyat", t:"Pi (π) — Ubiquity", d:2, type:"question"},
+ {f:"riyaziyyat", t:"Butterfly Effect (Chaos Theory)", d:2, type:"question"},
+ {f:"riyaziyyat", t:"Newcomb's Paradox", d:3, type:"paradox"},
+ {f:"riyaziyyat", t:"Monty Hall Problem", d:2, type:"paradox"},
+ {f:"riyaziyyat", t:"Prisoner's Dilemma", d:2, type:"paradox"},
+ {f:"riyaziyyat", t:"Trolley Problem", d:1, type:"paradox"},
+ {f:"riyaziyyat", t:"Ship of Theseus", d:2, type:"paradox"},
+ {f:"riyaziyyat", t:"Barber Paradox", d:2, type:"paradox"},
+ {f:"riyaziyyat", t:"Liar Paradox", d:2, type:"paradox"},
+ {f:"riyaziyyat", t:"Sorites Paradox", d:2, type:"paradox"},
+ {f:"riyaziyyat", t:"Russell's Paradox", d:3, type:"paradox"},
+ {f:"riyaziyyat", t:"Birthday Paradox", d:1, type:"paradox"},
+ {f:"riyaziyyat", t:"Sleeping Beauty Problem", d:3, type:"paradox"},
+ {f:"riyaziyyat", t:"Simpson's Paradox", d:2, type:"paradox"},
+ {f:"riyaziyyat", t:"Gambler's Fallacy", d:1, type:"paradox"},
+
+ {f:"ai", t:"Artificial General Intelligence (AGI)", d:2, type:"question"},
+ {f:"ai", t:"Chinese Room Argument", d:3, type:"paradox"},
+ {f:"ai", t:"AI Hallucination", d:2, type:"question"},
+ {f:"ai", t:"Turing Test", d:2, type:"question"},
+ {f:"ai", t:"AI Alignment Problem", d:2, type:"question"},
+ {f:"ai", t:"Machine Ethics", d:2, type:"question"},
+ {f:"ai", t:"Algorithmic Bias", d:2, type:"question"},
+
+ {f:"felsefe", t:"Personal Identity (Fəlsəfi problem)", d:3, type:"question"},
+ {f:"felsefe", t:"Free Will", d:3, type:"question"},
+ {f:"felsefe", t:"Determinism", d:3, type:"question"},
+ {f:"felsefe", t:"Qualia", d:2, type:"question"},
+ {f:"felsefe", t:"Brain in a Vat", d:3, type:"paradox"},
+ {f:"felsefe", t:"Simulation Hypothesis", d:2, type:"question"},
+ {f:"felsefe", t:"Paradox of Hedonism", d:1, type:"paradox"},
+
+ {f:"dilcilik", t:"Sapir–Whorf Hypothesis (Linguistic Relativity)", d:2, type:"question"},
+ {f:"dilcilik", t:"Etymology", d:1, type:"question"},
+ {f:"dilcilik", t:"Critical Period Hypothesis", d:2, type:"question"},
+ {f:"dilcilik", t:"Emoji Linguistics", d:1, type:"question"},
+
+ {f:"statistika", t:"Correlation vs. Causation", d:1, type:"question"},
+ {f:"statistika", t:"P-value", d:2, type:"question"},
+ {f:"statistika", t:"Spurious Correlation", d:2, type:"question"},
+ {f:"statistika", t:"Normal Distribution (Gaussian)", d:2, type:"question"},
+ {f:"statistika", t:"Selection Bias", d:2, type:"question"},
+
+ {f:"cemiyyet", t:"Collapse of Empires", d:2, type:"question"},
+ {f:"cemiyyet", t:"Fiat Currency", d:2, type:"question"},
+ {f:"cemiyyet", t:"Echo Chamber", d:2, type:"question"},
+ {f:"cemiyyet", t:"Conspiracy Theory Psychology", d:2, type:"question"},
+ {f:"cemiyyet", t:"Memetics", d:2, type:"question"},
+
+ {f:"psixologiya", t:"Stroop Effect (Sınaq)", d:1, type:"experiment"},
+ {f:"psixologiya", t:"Reaction Time Test", d:1, type:"experiment"},
+ {f:"psixologiya", t:"Mere Exposure Effect (Sınaq)", d:1, type:"experiment"},
+ {f:"psixologiya", t:"Serial Position Effect", d:1, type:"experiment"},
+ {f:"statistika", t:"Mini Survey: Reaction Time Distribution", d:2, type:"experiment"},
+ {f:"kimya", t:"Acid–Base Reaction (Sirkə-Soda Təcrübəsi)", d:1, type:"experiment"},
+];
+
+const WOW = [
+ "Əgər bütün xatirələrin dəyişdirilsəydi, yenə eyni insan olardın?",
+ "Süni intellekt şüurlu olduğunu iddia etsə, ona inanmalıyıq?",
+ "Kainatda heç bir müşahidəçi olmasaydı, fiziki qanunlar yenə \"mövcud\" olardımı?",
+ "Heçlik nədir? Kainatda heç nə olmasaydı, \"heçlik\" özü mövcud olardımı?",
+ "Beynim mənə yalan danışırmı?",
+ "Keçmiş artıq mövcud deyil, gələcək hələ mövcud deyil — bəs \"indiki zaman\" nədir?",
+ "Güzgüdə gördüyün insanla beynin \"mən\" modeli arasında nə fərq var?",
+ "Kainat niyə var — heç nə əvəzinə?",
+ "AI nə vaxtsa özünü dərk edə bilərmi?",
+ "İnsan olmaq nə deməkdir — genetik, bioloji, psixoloji və fəlsəfi baxımdan?",
+ "Təsadüf həqiqətən mövcuddurmu?",
+ "Kainatın kənarına getsəydin, nə görərdin?",
+];
+
+const TYPE_META = {
+  question: {emoji:"💭", label:"Sual"},
+  experiment: {emoji:"🧪", label:"Eksperiment"},
+  paradox: {emoji:"🧩", label:"Paradoks"},
+  wow: {emoji:"✨", label:"Düşündürücü"},
+};
+
+/* ---------------- STATE ---------------- */
+let STATS = { xp:0, streak:0, lastActiveDate:null, exploredIds:[], customTopics:[] };
+let ENTRIES = [];
+let currentMode = "all";
+let currentTopic = null;
+let activeFieldFilter = null;
+
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+
+async function loadData(){
+  try{
+    const r = await window.storage.get('user-stats');
+    if(r && r.value) STATS = Object.assign(STATS, JSON.parse(r.value));
+  }catch(e){ /* no data yet */ }
+  try{
+    const r2 = await window.storage.get('journal-entries');
+    if(r2 && r2.value) ENTRIES = JSON.parse(r2.value);
+  }catch(e){ ENTRIES = []; }
+  handleStreak();
+  renderAll();
+}
+async function saveStats(){
+  try{ await window.storage.set('user-stats', JSON.stringify(STATS)); }catch(e){ console.error(e); }
+}
+async function saveEntries(){
+  try{ await window.storage.set('journal-entries', JSON.stringify(ENTRIES)); }catch(e){ console.error(e); }
+}
+
+function handleStreak(){
+  const today = todayStr();
+  if(!STATS.lastActiveDate){ return; }
+  const last = new Date(STATS.lastActiveDate);
+  const now = new Date(today);
+  const diffDays = Math.round((now - last)/86400000);
+  if(diffDays >= 2){ STATS.streak = 0; }
+}
+function touchStreakOnAction(){
+  const today = todayStr();
+  if(STATS.lastActiveDate === today) return;
+  if(STATS.lastActiveDate){
+    const diff = Math.round((new Date(today) - new Date(STATS.lastActiveDate))/86400000);
+    STATS.streak = (diff === 1) ? STATS.streak + 1 : 1;
+  } else {
+    STATS.streak = 1;
+  }
+  STATS.lastActiveDate = today;
+}
+
+function allTopics(){
+  const custom = (STATS.customTopics||[]).map((c,i)=>({f:c.field||'custom', t:c.title, d:1, type:'question', custom:true, id:'c'+i}));
+  return TOPICS.map((t,i)=>({...t, id:'t'+i})).concat(custom);
+}
+
+function xpForLevel(level){ return 200 * level; }
+function levelFromXp(xp){ let lvl=1; while(xp >= xpForLevel(lvl)){ xp -= xpForLevel(lvl); lvl++; } return lvl; }
+
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2400);
+}
+
+/* ---------------- STARFIELD ---------------- */
+function buildStars(){
+  const wrap = document.getElementById('stars');
+  let html = '';
+  for(let i=0;i<90;i++){
+    const size = Math.random()*2 + 0.6;
+    const top = Math.random()*100, left = Math.random()*100;
+    const dur = (Math.random()*4+3).toFixed(1);
+    const delay = (Math.random()*5).toFixed(1);
+    html += `<div class="star" style="width:${size}px;height:${size}px;top:${top}%;left:${left}%;animation-duration:${dur}s;animation-delay:${delay}s;"></div>`;
+  }
+  wrap.innerHTML = html;
+}
+
+/* ---------------- ORBIT NODES ---------------- */
+function buildOrbit(){
+  const node = document.getElementById('orbitNode');
+  const keys = Object.keys(FIELDS).filter(k=>k!=='custom');
+  const R = 130;
+  let html = '';
+  keys.forEach((k,i)=>{
+    const angle = (i/keys.length) * 2*Math.PI;
+    const x = 140 + R*Math.cos(angle) - 17;
+    const y = 140 + R*Math.sin(angle) - 17;
+    html += `<span style="left:${x}px; top:${y}px; border-color:${FIELDS[k].color}44;">${FIELDS[k].emoji}</span>`;
+  });
+  node.innerHTML = html;
+}
+
+/* ---------------- TABS ---------------- */
+document.getElementById('tabs').addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-tab]');
+  if(!btn) return;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  ['home','explore','journal','challenges'].forEach(id=>{
+    document.getElementById('tab-'+id).hidden = (id !== btn.dataset.tab);
+  });
+  if(btn.dataset.tab === 'journal') renderJournal();
+  if(btn.dataset.tab === 'explore') renderExplore();
+  if(btn.dataset.tab === 'challenges') renderChallenges();
+});
+
+/* ---------------- MODE CHIPS ---------------- */
+document.getElementById('modes').addEventListener('click', (e)=>{
+  const chip = e.target.closest('.chip');
+  if(!chip) return;
+  document.querySelectorAll('#modes .chip').forEach(c=>c.classList.remove('active'));
+  chip.classList.add('active');
+  currentMode = chip.dataset.mode;
+});
+
+/* ---------------- RANDOM PICK ---------------- */
+const SEARCH_LINES = [
+  "Kainatda axtarılır...",
+  "Neyronlar arasında gəzilir...",
+  "Milyardlarla ehtimal ələnir...",
+  "Bilinməyənə yaxınlaşılır...",
+  "Sual formalaşdırılır...",
+];
+document.getElementById('mainRandomBtn').addEventListener('click', ()=>{
+  pickRandom();
+});
+function pickRandom(){
+  const btn = document.getElementById('mainRandomBtn');
+  const cons = document.querySelector('.constellation');
+  const caption = document.getElementById('searchCaption');
+  if(btn.classList.contains('searching')) return;
+
+  btn.classList.add('searching');
+  cons.classList.add('searching');
+  caption.classList.add('show');
+  const wrap = document.getElementById('revealWrap');
+  wrap.style.display = 'none';
+
+  let lineIdx = 0;
+  caption.textContent = SEARCH_LINES[0];
+  const lineTimer = setInterval(()=>{
+    lineIdx = (lineIdx+1) % SEARCH_LINES.length;
+    caption.textContent = SEARCH_LINES[lineIdx];
+  }, 380);
+
+  const duration = 1300 + Math.random()*500;
+  setTimeout(()=>{
+    clearInterval(lineTimer);
+    btn.classList.remove('searching');
+    cons.classList.remove('searching');
+    caption.classList.remove('show');
+    resolveRandomPick();
+  }, duration);
+}
+function resolveRandomPick(){
+  let pool;
+  if(currentMode === 'wow'){
+    const w = WOW[Math.floor(Math.random()*WOW.length)];
+    showReveal({f:'felsefe', t:w, d:1, type:'wow', id:'w'+w.length+Math.random()});
+    return;
+  } else if(currentMode === 'experiment'){
+    pool = allTopics().filter(x=>x.type==='experiment');
+  } else if(currentMode === 'paradox'){
+    pool = allTopics().filter(x=>x.type==='paradox');
+  } else {
+    pool = allTopics();
+  }
+  if(!pool.length) pool = allTopics();
+  const topic = pool[Math.floor(Math.random()*pool.length)];
+  showReveal(topic);
+  STATS.xp += 5;
+  touchStreakOnAction();
+  if(!STATS.exploredIds.includes(topic.id)) STATS.exploredIds.push(topic.id);
+  saveStats();
+  renderTopStats();
+}
+
+function starRating(d){
+  return '★'.repeat(d) + '☆'.repeat(3-d);
+}
+
+function showReveal(topic){
+  currentTopic = topic;
+  const meta = FIELDS[topic.f] || FIELDS.custom;
+  const tmeta = TYPE_META[topic.type] || TYPE_META.question;
+  const wrap = document.getElementById('revealWrap');
+  wrap.style.display = 'block';
+  wrap.innerHTML = `
+    <div class="topic-reveal" style="border-color:${meta.color}55;">
+      <span class="field-tag mono" style="color:${meta.color};">${meta.emoji} ${meta.name} · ${tmeta.emoji} ${tmeta.label}</span>
+      <h3>${topic.t}</h3>
+      <div class="diff-stars" style="color:${meta.color};">${starRating(topic.d)}</div>
+      <div class="reveal-actions">
+        <button class="btn primary" id="startResearchBtn">Araşdırmaya başla →</button>
+        <button class="btn ghost" id="rerollBtn">🎲 Başqasını göstər</button>
+      </div>
+    </div>
+  `;
+  wrap.scrollIntoView({behavior:'smooth', block:'center'});
+  document.getElementById('startResearchBtn').onclick = ()=> openTopicOverlay(topic);
+  document.getElementById('rerollBtn').onclick = ()=> pickRandom();
+}
+
+/* ---------------- TOPIC OVERLAY (4 steps + journal) ---------------- */
+function openTopicOverlay(topic){
+  currentTopic = topic;
+  const meta = FIELDS[topic.f] || FIELDS.custom;
+  const overlay = document.getElementById('overlay');
+  const card = document.getElementById('overlayCard');
+  const rabbit = getRabbitHole(topic);
+  card.innerHTML = `
+    <button class="overlay-close" id="closeOverlay">✕</button>
+    <span class="field-tag mono" style="color:${meta.color};">${meta.emoji} ${meta.name}</span>
+    <h3 style="font-size:1.4rem; margin:14px 0 4px;">${topic.t}</h3>
+    <div class="diff-stars" style="color:${meta.color};">${starRating(topic.d)}</div>
+
+    <div class="step">
+      <span class="num mono">01 — ANLA</span>
+      <h4>Sualı öz sözlərinlə düşün</h4>
+      <p style="color:var(--text-dim); font-size:0.88rem;">Bir neçə dəqiqə bu sual üzərində fikirləş. Hələ heç yerə baxma — əvvəlcə öz zehninlə çalış.</p>
+    </div>
+
+    <div class="step">
+      <span class="num mono">02 — ÖZ CAVABIN</span>
+      <h4>İlk fikrini yaz</h4>
+      <textarea id="stepFirst" placeholder="Mənim ilk fikrim..."></textarea>
+    </div>
+
+    <div class="step">
+      <span class="num mono">03 — ARAŞDIR</span>
+      <h4>Mənbələri özün tap</h4>
+      <p style="color:var(--text-dim); font-size:0.88rem; margin-bottom:10px;">Google, Wikipedia, elmi məqalələr — istənilən mənbədən öyrən.</p>
+      <a class="btn ghost" style="display:inline-block; margin-bottom:12px;" target="_blank" rel="noopener" href="https://www.google.com/search?q=${encodeURIComponent(topic.t)}">🔎 Bu mövzunu axtar</a>
+      <textarea id="stepLearned" placeholder="Araşdırarkən öyrəndiklərim..."></textarea>
+    </div>
+
+    <div class="step">
+      <span class="num mono">04 — NƏTİCƏ</span>
+      <h4>Səni təəccübləndirən şey nə oldu?</h4>
+      <textarea id="stepSurprise" placeholder="Məni təəccübləndirən..."></textarea>
+      <h4 style="margin-top:14px;">Öz nəticən</h4>
+      <textarea id="stepConclusion" placeholder="Mənim nəticəm..."></textarea>
+    </div>
+
+    <div style="margin-top:26px; display:flex; gap:10px; flex-wrap:wrap;">
+      <button class="btn primary" id="saveEntryBtn">💾 Dəftərə yaz (+XP)</button>
+      <button class="btn ghost" id="skipSaveBtn">Bağla</button>
+    </div>
+
+    <div class="step">
+      <span class="num mono">🕳️ RABBIT HOLE</span>
+      <h4>Daha dərinə get</h4>
+      <div class="rabbit-list" id="rabbitList"></div>
+    </div>
+  `;
+  const rlist = card.querySelector('#rabbitList');
+  rlist.innerHTML = rabbit.map(rt => {
+    const m = FIELDS[rt.f] || FIELDS.custom;
+    return `<div class="rabbit-item" data-id="${rt.id}"><span>${m.emoji} ${rt.t}</span><span style="color:${m.color};">→</span></div>`;
+  }).join('');
+  rlist.querySelectorAll('.rabbit-item').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const t = allTopics().find(x=>x.id === el.dataset.id);
+      if(t) openTopicOverlay(t);
+    });
+  });
+
+  overlay.hidden = false;
+  document.getElementById('closeOverlay').onclick = ()=> overlay.hidden = true;
+  document.getElementById('skipSaveBtn').onclick = ()=> overlay.hidden = true;
+  document.getElementById('saveEntryBtn').onclick = ()=> saveJournalEntry(topic);
+  overlay.onclick = (e)=>{ if(e.target === overlay) overlay.hidden = true; };
+}
+
+function getRabbitHole(topic){
+  const others = allTopics().filter(x=>x.id !== topic.id);
+  const sameField = others.filter(x=>x.f === topic.f);
+  const otherField = others.filter(x=>x.f !== topic.f);
+  const picks = [];
+  const shuffled = sameField.sort(()=>Math.random()-0.5);
+  picks.push(...shuffled.slice(0,2));
+  if(otherField.length) picks.push(otherField[Math.floor(Math.random()*otherField.length)]);
+  return picks.slice(0,3);
+}
+
+async function saveJournalEntry(topic){
+  const first = document.getElementById('stepFirst').value.trim();
+  const learned = document.getElementById('stepLearned').value.trim();
+  const surprise = document.getElementById('stepSurprise').value.trim();
+  const conclusion = document.getElementById('stepConclusion').value.trim();
+
+  const meta = FIELDS[topic.f] || FIELDS.custom;
+  const entry = {
+    id: 'e' + Date.now(),
+    topicTitle: topic.t,
+    field: topic.f,
+    type: topic.type,
+    date: new Date().toISOString(),
+    first, learned, surprise, conclusion,
+  };
+  ENTRIES.unshift(entry);
+  await saveEntries();
+
+  let gained = 20;
+  if(topic.type === 'experiment') gained = 30;
+  if(learned) gained += 10;
+  STATS.xp += gained;
+  touchStreakOnAction();
+  if(!STATS.exploredIds.includes(topic.id)) STATS.exploredIds.push(topic.id);
+  await saveStats();
+
+  toast(`+${gained} XP qazandın! Dəftərə yazıldı.`);
+  document.getElementById('overlay').hidden = true;
+  renderAll();
+}
+
+/* ---------------- WOW GRID ---------------- */
+function renderWow(){
+  const grid = document.getElementById('wowGrid');
+  grid.innerHTML = WOW.map(w => `<div class="wow-card" data-w="${encodeURIComponent(w)}">${w}</div>`).join('');
+  grid.querySelectorAll('.wow-card').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      openTopicOverlay({f:'felsefe', t:decodeURIComponent(el.dataset.w), d:1, type:'wow', id:'w'+el.dataset.w.length});
+    });
+  });
+}
+
+/* ---------------- EXPLORE MAP ---------------- */
+function renderExplore(){
+  const mapWrap = document.getElementById('mapWrap');
+  const keys = Object.keys(FIELDS).filter(k=>k!=='custom');
+  const rect = { w: Math.min(mapWrap.clientWidth || 700, 720), h: 560 };
+  const cx = rect.w/2, cy = rect.h/2, R = Math.min(cx,cy) - 70;
+
+  // clear old nodes (keep center + svg)
+  mapWrap.querySelectorAll('.field-node').forEach(n=>n.remove());
+  const svg = document.getElementById('mapLines');
+  svg.setAttribute('viewBox', `0 0 ${rect.w} ${rect.h}`);
+  let lines = '';
+
+  keys.forEach((k,i)=>{
+    const angle = (i/keys.length) * 2*Math.PI - Math.PI/2;
+    const x = cx + R*Math.cos(angle);
+    const y = cy + R*Math.sin(angle);
+    lines += `<line x1="${cx}" y1="${cy}" x2="${x}" y2="${y}" stroke="${FIELDS[k].color}" stroke-opacity="0.18" stroke-width="1"/>`;
+    const btn = document.createElement('button');
+    btn.className = 'field-node' + (activeFieldFilter === k ? ' active' : '');
+    btn.style.left = x+'px'; btn.style.top = y+'px';
+    btn.style.setProperty('--node-color', FIELDS[k].color);
+    btn.innerHTML = `<div class="bubble">${FIELDS[k].emoji}</div><span class="fname">${FIELDS[k].name}</span>`;
+    btn.addEventListener('click', ()=>{
+      activeFieldFilter = (activeFieldFilter === k) ? null : k;
+      renderExplore();
+    });
+    mapWrap.appendChild(btn);
+  });
+  svg.innerHTML = lines;
+
+  document.getElementById('clearFilterBtn').style.display = activeFieldFilter ? 'inline-block' : 'none';
+
+  const grid = document.getElementById('exploreGrid');
+  const list = allTopics().filter(t => !activeFieldFilter || t.f === activeFieldFilter);
+  grid.innerHTML = list.map(t=>{
+    const m = FIELDS[t.f] || FIELDS.custom;
+    const tm = TYPE_META[t.type] || TYPE_META.question;
+    return `<button class="topic-card" data-id="${t.id}" style="border-left:3px solid ${m.color};">
+      <div class="top-row"><span class="tag mono">${m.emoji} ${m.name}</span><span class="tag mono">${tm.emoji}</span></div>
+      <p class="ttl">${t.t}</p>
+    </button>`;
+  }).join('') || `<div class="empty-state" style="grid-column:1/-1;"><div class="big">🔭</div>Bu sahədə hələ mövzu yoxdur.</div>`;
+  grid.querySelectorAll('.topic-card').forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const t = allTopics().find(x=>x.id === el.dataset.id);
+      if(t) openTopicOverlay(t);
+    });
+  });
+
+  // populate custom field select
+  const sel = document.getElementById('customField');
+  if(sel && !sel.dataset.built){
+    sel.innerHTML = Object.entries(FIELDS).filter(([k])=>k!=='custom').map(([k,v])=>`<option value="${k}">${v.emoji} ${v.name}</option>`).join('');
+    sel.dataset.built = '1';
+  }
+}
+document.getElementById('clearFilterBtn').addEventListener('click', ()=>{ activeFieldFilter = null; renderExplore(); });
+
+document.getElementById('addCustomBtn').addEventListener('click', async ()=>{
+  const titleEl = document.getElementById('customTitle');
+  const fieldEl = document.getElementById('customField');
+  const title = titleEl.value.trim();
+  if(!title){ toast('Mövzu adı boş ola bilməz'); return; }
+  STATS.customTopics = STATS.customTopics || [];
+  STATS.customTopics.push({title, field: fieldEl.value});
+  await saveStats();
+  titleEl.value = '';
+  toast('Mövzu əlavə edildi!');
+  renderExplore();
+});
+
+/* ---------------- JOURNAL ---------------- */
+function renderJournal(){
+  const level = levelFromXp(STATS.xp);
+  let remaining = STATS.xp;
+  for(let l=1; l<level; l++) remaining -= xpForLevel(l);
+  const need = xpForLevel(level);
+  document.getElementById('levelNum').textContent = level;
+  document.getElementById('xpNow').textContent = remaining;
+  document.getElementById('xpNext').textContent = need;
+  document.getElementById('xpBarFill').style.width = Math.min(100, (remaining/need)*100) + '%';
+
+  const fieldsUsed = new Set(ENTRIES.map(e=>e.field));
+  document.getElementById('j-topics').textContent = ENTRIES.length;
+  document.getElementById('j-fields').textContent = fieldsUsed.size;
+  document.getElementById('j-experiments').textContent = ENTRIES.filter(e=>e.type==='experiment').length;
+  document.getElementById('j-paradoxes').textContent = ENTRIES.filter(e=>e.type==='paradox').length;
+
+  const counts = {};
+  ENTRIES.forEach(e=>{ counts[e.field] = (counts[e.field]||0)+1; });
+  const max = Math.max(1, ...Object.values(counts));
+  const barsEl = document.getElementById('fieldBars');
+  const sortedFields = Object.keys(FIELDS).filter(k=>k!=='custom' && counts[k]).sort((a,b)=>counts[b]-counts[a]);
+  barsEl.innerHTML = sortedFields.length ? sortedFields.map(k=>{
+    const m = FIELDS[k];
+    const pct = (counts[k]/max)*100;
+    return `<div class="bar-row"><span>${m.emoji} ${m.name}</span><div class="bar-track"><div class="bar-fill" style="width:${pct}%; background:linear-gradient(90deg, ${m.color}, var(--green));"></div></div><span class="mono">${counts[k]}</span></div>`;
+  }).join('') : `<div style="color:var(--text-faint); font-size:0.85rem; text-align:center;">Hələ statistika yoxdur — bir mövzu araşdır!</div>`;
+
+  const listEl = document.getElementById('entriesList');
+  if(!ENTRIES.length){
+    listEl.innerHTML = `<div class="empty-state"><div class="big">📓</div>Dəftərin hələ boşdur.<br>Ana səhifəyə qayıt və ilk mövzunu araşdır.</div>`;
+    return;
+  }
+  listEl.innerHTML = ENTRIES.map(e=>{
+    const m = FIELDS[e.field] || FIELDS.custom;
+    const date = new Date(e.date);
+    const dateStr = date.toLocaleDateString('az-AZ', {day:'numeric', month:'short', year:'numeric'});
+    return `<div class="entry-card" style="border-left:3px solid ${m.color};">
+      <div class="ehead">
+        <h4>${e.topicTitle}</h4>
+        <span class="edate mono">${dateStr}</span>
+      </div>
+      <div class="efield mono">${m.emoji} ${m.name}</div>
+      ${e.first ? `<div class="entry-block"><b>İlk fikrim</b><p>${escapeHtml(e.first)}</p></div>`:''}
+      ${e.learned ? `<div class="entry-block"><b>Öyrəndiklərim</b><p>${escapeHtml(e.learned)}</p></div>`:''}
+      ${e.surprise ? `<div class="entry-block"><b>Məni təəccübləndirən</b><p>${escapeHtml(e.surprise)}</p></div>`:''}
+      ${e.conclusion ? `<div class="entry-block"><b>Nəticəm</b><p>${escapeHtml(e.conclusion)}</p></div>`:''}
+    </div>`;
+  }).join('');
+}
+function escapeHtml(s){ const d=document.createElement('div'); d.textContent = s; return d.innerHTML; }
+
+/* ---------------- CHALLENGES ---------------- */
+function renderChallenges(){
+  const seq = ['fizika','psixologiya','biologiya','riyaziyyat','felsefe','astronomiya', null];
+  const c7 = document.getElementById('challenge7');
+  c7.innerHTML = seq.map((k,i)=>{
+    const done = k ? ENTRIES.some(e=>e.field===k) : ENTRIES.length >= 6;
+    const label = k ? `${FIELDS[k].emoji} Gün ${i+1}` : `🎲 Gün 7 (random)`;
+    return `<span class="day-pill${done?' done':''}">${label}</span>`;
+  }).join('');
+
+  const paradoxTopics = TOPICS.filter(t=>t.type==='paradox').slice(0,7);
+  const cp = document.getElementById('challengeParadox');
+  cp.innerHTML = paradoxTopics.map((t,i)=>{
+    const done = ENTRIES.some(e=>e.topicTitle===t.t);
+    return `<span class="day-pill${done?' done':''}" title="${t.t}">🧩 ${i+1}</span>`;
+  }).join('');
+}
+
+/* ---------------- TOP STATS ---------------- */
+function renderTopStats(){
+  const fieldsUsed = new Set(ENTRIES.map(e=>e.field));
+  document.getElementById('s-topics').textContent = ENTRIES.length;
+  document.getElementById('s-fields').textContent = fieldsUsed.size;
+  document.getElementById('s-streak').textContent = STATS.streak || 0;
+  document.getElementById('s-xp').textContent = STATS.xp || 0;
+  document.getElementById('streakCount').textContent = STATS.streak || 0;
+}
+
+function renderAll(){
+  renderTopStats();
+  renderWow();
+  renderJournal();
+  renderChallenges();
+}
+
+/* ---------------- INIT ---------------- */
+buildStars();
+buildOrbit();
+window.addEventListener('resize', ()=>{ if(!document.getElementById('tab-explore').hidden) renderExplore(); });
+loadData();
+</script>
+
+</body>
+</html>
