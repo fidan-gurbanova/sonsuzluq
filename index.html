@@ -7,10 +7,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <style>
   :root{
     --bg: #07060d;
@@ -62,6 +62,7 @@
     position:sticky; top:0; z-index:50;
     display:flex; align-items:center; justify-content:space-between;
     padding: 18px 32px;
+    -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
     background: rgba(7,6,13,0.55);
     border-bottom: 1px solid var(--border-soft);
@@ -221,7 +222,7 @@
   .add-form textarea{ resize:vertical; min-height:70px; }
 
   /* overlay */
-  .overlay{ position:fixed; inset:0; z-index:100; background:rgba(5,4,10,0.72); backdrop-filter:blur(6px); display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; padding: 50px 20px; }
+  .overlay{ position:fixed; inset:0; z-index:100; background:rgba(5,4,10,0.72); -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px); display:flex; align-items:flex-start; justify-content:center; overflow-y:auto; -webkit-overflow-scrolling:touch; padding: 50px 20px; }
   .overlay[hidden]{ display:none !important; }
   .overlay-card{ width:100%; max-width:640px; background: linear-gradient(160deg, #14112a, #0b0a17); border:1px solid var(--border); border-radius:22px; padding:34px 34px 40px; animation: revealIn .35s ease; position:relative; }
   .overlay-close{ position:absolute; top:18px; right:18px; width:34px; height:34px; border-radius:50%; background:var(--glass); border:1px solid var(--border-soft); color:var(--text-dim); font-size:1rem; display:flex; align-items:center; justify-content:center; }
@@ -246,9 +247,13 @@
     .hero{ padding-top:40px; }
     .constellation{ width:220px; height:220px; }
     .orbit-node, .orbit-ring{ width:220px; height:220px; }
+    .orbit-node span{ width:30px; height:30px; font-size:13px; }
     #mainRandomBtn{ width:120px; height:120px; }
     .stats-strip .stat{ padding:0 14px; }
-    .map-wrap{ height:auto; }
+    .map-wrap{ height:320px; }
+    .field-node .bubble{ width:40px; height:40px; font-size:1.05rem; }
+    .field-node span.fname{ display:none; }
+    .map-center .core{ width:76px; height:76px; font-size:0.62rem; }
     .journal-stats{ grid-template-columns:repeat(2,1fr); }
   }
 </style>
@@ -616,17 +621,22 @@ function buildStars(){
 /* ---------------- ORBIT NODES ---------------- */
 function buildOrbit(){
   const node = document.getElementById('orbitNode');
+  const cons = document.querySelector('.constellation');
   const keys = Object.keys(FIELDS).filter(k=>k!=='custom');
+  const size = cons ? cons.clientWidth : 280;
+  const half = size / 2;
+  const iconHalf = size <= 220 ? 15 : 17;
+  const R = half - iconHalf - 6;
   let html = '';
   keys.forEach((k,i)=>{
     const angle = (i/keys.length) * 2*Math.PI;
-    const x = 50 + 46 * Math.cos(angle);
-    const y = 50 + 46 * Math.sin(angle);
-    html += `<span style="left:calc(${x}% - 17px); top:calc(${y}% - 17px); border-color:${FIELDS[k].color}44;">${FIELDS[k].emoji}</span>`;
+    const x = half + R*Math.cos(angle) - iconHalf;
+    const y = half + R*Math.sin(angle) - iconHalf;
+    html += `<span style="left:${x}px; top:${y}px; border-color:${FIELDS[k].color}44;">${FIELDS[k].emoji}</span>`;
   });
   node.innerHTML = html;
 }
-  
+
 /* ---------------- TABS ---------------- */
 document.getElementById('tabs').addEventListener('click', (e)=>{
   const btn = e.target.closest('button[data-tab]');
@@ -866,8 +876,8 @@ function renderWow(){
 function renderExplore(){
   const mapWrap = document.getElementById('mapWrap');
   const keys = Object.keys(FIELDS).filter(k=>k!=='custom');
-  const rect = { w: Math.min(mapWrap.clientWidth || 700, 720), h: 560 };
-  const cx = rect.w/2, cy = rect.h/2, R = Math.min(cx,cy) - 70;
+  const rect = { w: Math.min(mapWrap.clientWidth || 700, 720), h: mapWrap.clientHeight || 560 };
+  const cx = rect.w/2, cy = rect.h/2, R = Math.min(cx,cy) - (rect.h < 400 ? 55 : 70);
 
   // clear old nodes (keep center + svg)
   mapWrap.querySelectorAll('.field-node').forEach(n=>n.remove());
@@ -1024,7 +1034,10 @@ function renderAll(){
 /* ---------------- INIT ---------------- */
 buildStars();
 buildOrbit();
-window.addEventListener('resize', ()=>{ if(!document.getElementById('tab-explore').hidden) renderExplore(); });
+window.addEventListener('resize', ()=>{
+  buildOrbit();
+  if(!document.getElementById('tab-explore').hidden) renderExplore();
+});
 loadData();
 </script>
 
